@@ -28,6 +28,8 @@ import {AppContext} from '../context/AppContext';
 
 const ListingScreen = () => {
   const flatRef = useRef(1);
+  const loadingRef = useRef(true);
+
   const [items, setItems] = useState(PAGE1.page['content-items'].content);
   const [tempItems, setTempItems] = useState(
     PAGE1.page['content-items'].content,
@@ -35,26 +37,24 @@ const ListingScreen = () => {
   const {searchbarVisible, searchbarHandler} = useContext(AppContext);
   const [loading, setLoading] = useState(false);
   const [searchValue, setSearchValue] = useState('');
-  console.log(flatRef);
 
   const onEndReached = () => {
     if (flatRef.current <= 3) {
       flatRef.current = flatRef.current + 1;
-      if (flatRef.current < 4) {
-        setLoading(true);
+      if (flatRef.current < 3) {
+        loadingRef.current = true;
       }
       if (flatRef.current === 2) {
         setTimeout(() => {
-          setLoading(false);
           setItems([...items, ...PAGE2.page['content-items'].content]);
           setTempItems([...items, ...PAGE2.page['content-items'].content]);
         }, 2000);
       } else if (flatRef.current === 3) {
         setTimeout(() => {
-          setLoading(false);
           setItems([...items, ...PAGE3.page['content-items'].content]);
           setTempItems([...items, ...PAGE3.page['content-items'].content]);
         }, 2000);
+        loadingRef.current = false;
       }
     }
   };
@@ -126,7 +126,7 @@ const ListingScreen = () => {
         onEndReached={onEndReached}
         ListEmptyComponent={<_renderEmptyComponent />}
         ListFooterComponent={
-          loading && (
+          loadingRef.current && (
             <View style={styles.outerContainer}>
               <ActivityIndicator size={25} color={Colors.WHITE} />
             </View>
